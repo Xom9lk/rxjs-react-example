@@ -1,0 +1,12 @@
+.point {
+    border-bottom: 1px solid gray;
+    padding: 5px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.name {
+    margin-right: 10px;
+    flex: 1 1 auto;
+}

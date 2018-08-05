@@ -1,0 +1,10 @@
+.container {
+    position: relative;
+    flex: 1 1 340px;
+}
+
+.map {
+    height: 100%;
+}
+
+.searchBox {}

@@ -1,0 +1,13 @@
+{
+  "rules": {
+    "no-empty-interface": false,
+    "no-console": false
+  },
+  "extends": ["tslint:recommended", "tslint-react", "tslint-config-prettier"],
+  "linterOptions": {
+    "exclude": [
+      "config/**/*.js",
+      "node_modules/**/*.ts"
+    ]
+  }
+}

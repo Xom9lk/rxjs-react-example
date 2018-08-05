@@ -1,0 +1,8 @@
+.sidebar {
+    overflow: auto;
+    flex: 0 0 400px;
+}
+
+.empty {
+    padding: 15px 10px;
+}
