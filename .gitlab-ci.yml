@@ -1,0 +1,40 @@
+image: node:8.11.3-stretch
+
+cache:
+  key: node_modules
+  paths:
+  - node_modules/
+
+before_script:
+  - yarn config set cache-folder node_modules
+  - yarn install
+
+stages:
+  - test
+  - build
+  - deploy
+
+test:unit:
+  stage: test
+  script:
+    - yarn run test
+
+build:app:
+  stage: build
+  script:
+    - yarn run build
+  artifacts:
+    paths:
+      - build
+
+pages:
+  stage: deploy
+  script:
+  - mkdir .public
+  - cp -r build/* .public
+  - mv .public public
+  artifacts:
+    paths:
+      - public
+  only:
+    - master
