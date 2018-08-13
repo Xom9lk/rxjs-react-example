@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {Subscription} from 'rxjs/Subscription';
 /* tslint:disable:ordered-imports */
-import 'rxjs/add/operator/mergeMap';
+import 'rxjs/add/operator/switchMap';
 import {locationToLatLng} from '../../common/locationConverter';
 import {DirectionPoint} from '../../entities/DirectionPoint';
 import {IDirectionPointScheme} from '../../schemes/IDirectionPointScheme';
@@ -49,7 +49,7 @@ export class Map extends React.PureComponent<IProps, IState> {
         this.subscriptions.push(this.googleSearchPlaceService.searchResult$.subscribe(this.searchHandler));
         this.subscriptions.push(this.googleSearchPlaceService.searchResult$.subscribe(this.recenter));
         this.subscriptions.push(this.mapService.changePointPosition$
-            .mergeMap(e => this.googleSearchPlaceService.findByLocation(e.location), (e, scheme) => ({
+            .switchMap(e => this.googleSearchPlaceService.findByLocation(e.location), (e, scheme) => ({
                 newData: scheme,
                 point: e.point,
             }))
