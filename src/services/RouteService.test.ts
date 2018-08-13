@@ -54,31 +54,36 @@ describe(RouteService.name, () => {
             expect(points[1].address).toBe('Test address 5');
             expect(points[1].location.latitude).toBe(5);
             expect(points[1].location.longitude).toBe(5);
+
             done();
         }));
-        subscriptions.push(routeService.createLines$.subscribe((lines) => {
-            expect(lines.size).toBe(2);
-            expect([...lines.keys()][0].name).toBe('Test name 3');
-            expect([...lines.keys()][0].address).toBe('Test address 3');
-            expect([...lines.keys()][0].location.latitude).toBe(3);
-            expect([...lines.keys()][0].location.longitude).toBe(3);
 
-            expect([...lines.values()][0].name).toBe('Test name 4');
-            expect([...lines.values()][0].address).toBe('Test address 4');
-            expect([...lines.values()][0].location.latitude).toBe(4);
-            expect([...lines.values()][0].location.longitude).toBe(4);
+        subscriptions.push(routeService.changeLines$.subscribe((changes) => {
+            expect(changes.create.size).toBe(2);
+            expect(changes.remove.size).toBe(0);
+            expect([...changes.create.keys()][0].name).toBe('Test name 3');
+            expect([...changes.create.keys()][0].address).toBe('Test address 3');
+            expect([...changes.create.keys()][0].location.latitude).toBe(3);
+            expect([...changes.create.keys()][0].location.longitude).toBe(3);
 
-            expect([...lines.keys()][1].name).toBe('Test name 4');
-            expect([...lines.keys()][1].address).toBe('Test address 4');
-            expect([...lines.keys()][1].location.latitude).toBe(4);
-            expect([...lines.keys()][1].location.longitude).toBe(4);
+            expect([...changes.create.values()][0].name).toBe('Test name 4');
+            expect([...changes.create.values()][0].address).toBe('Test address 4');
+            expect([...changes.create.values()][0].location.latitude).toBe(4);
+            expect([...changes.create.values()][0].location.longitude).toBe(4);
 
-            expect([...lines.values()][1].name).toBe('Test name 5');
-            expect([...lines.values()][1].address).toBe('Test address 5');
-            expect([...lines.values()][1].location.latitude).toBe(5);
-            expect([...lines.values()][1].location.longitude).toBe(5);
+            expect([...changes.create.keys()][1].name).toBe('Test name 4');
+            expect([...changes.create.keys()][1].address).toBe('Test address 4');
+            expect([...changes.create.keys()][1].location.latitude).toBe(4);
+            expect([...changes.create.keys()][1].location.longitude).toBe(4);
+
+            expect([...changes.create.values()][1].name).toBe('Test name 5');
+            expect([...changes.create.values()][1].address).toBe('Test address 5');
+            expect([...changes.create.values()][1].location.latitude).toBe(5);
+            expect([...changes.create.values()][1].location.longitude).toBe(5);
+
             done();
         }));
+
         placesService.addPoints([generateScheme(4), generateScheme(5)]);
     });
 
@@ -94,123 +99,123 @@ describe(RouteService.name, () => {
             expect(points[1].address).toBe('Test address 2');
             expect(points[1].location.latitude).toBe(2);
             expect(points[1].location.longitude).toBe(2);
+
             done();
         }));
-        subscriptions.push(routeService.createLines$.subscribe((lines) => {
-            expect(lines.size).toBe(1);
-            expect([...lines.keys()][0].name).toBe('Test name 1');
-            expect([...lines.keys()][0].address).toBe('Test address 1');
-            expect([...lines.keys()][0].location.latitude).toBe(1);
-            expect([...lines.keys()][0].location.longitude).toBe(1);
 
-            expect([...lines.values()][0].name).toBe('Test name 3');
-            expect([...lines.values()][0].address).toBe('Test address 3');
-            expect([...lines.values()][0].location.latitude).toBe(3);
-            expect([...lines.values()][0].location.longitude).toBe(3);
-            done();
-        }));
-        subscriptions.push(routeService.removeLines$.subscribe((lines) => {
-            expect(lines.size).toBe(3);
-            expect([...lines.keys()][0].name).toBe('Test name 0');
-            expect([...lines.keys()][0].address).toBe('Test address 0');
-            expect([...lines.keys()][0].location.latitude).toBe(0);
-            expect([...lines.keys()][0].location.longitude).toBe(0);
+        subscriptions.push(routeService.changeLines$.subscribe((changes) => {
+            expect(changes.create.size).toBe(1);
+            expect([...changes.create.keys()][0].name).toBe('Test name 1');
+            expect([...changes.create.keys()][0].address).toBe('Test address 1');
+            expect([...changes.create.keys()][0].location.latitude).toBe(1);
+            expect([...changes.create.keys()][0].location.longitude).toBe(1);
 
-            expect([...lines.values()][0].name).toBe('Test name 1');
-            expect([...lines.values()][0].address).toBe('Test address 1');
-            expect([...lines.values()][0].location.latitude).toBe(1);
-            expect([...lines.values()][0].location.longitude).toBe(1);
+            expect([...changes.create.values()][0].name).toBe('Test name 3');
+            expect([...changes.create.values()][0].address).toBe('Test address 3');
+            expect([...changes.create.values()][0].location.latitude).toBe(3);
+            expect([...changes.create.values()][0].location.longitude).toBe(3);
 
-            expect([...lines.keys()][1].name).toBe('Test name 1');
-            expect([...lines.keys()][1].address).toBe('Test address 1');
-            expect([...lines.keys()][1].location.latitude).toBe(1);
-            expect([...lines.keys()][1].location.longitude).toBe(1);
+            expect(changes.remove.size).toBe(3);
+            expect([...changes.remove.keys()][0].name).toBe('Test name 0');
+            expect([...changes.remove.keys()][0].address).toBe('Test address 0');
+            expect([...changes.remove.keys()][0].location.latitude).toBe(0);
+            expect([...changes.remove.keys()][0].location.longitude).toBe(0);
 
-            expect([...lines.values()][1].name).toBe('Test name 2');
-            expect([...lines.values()][1].address).toBe('Test address 2');
-            expect([...lines.values()][1].location.latitude).toBe(2);
-            expect([...lines.values()][1].location.longitude).toBe(2);
+            expect([...changes.remove.values()][0].name).toBe('Test name 1');
+            expect([...changes.remove.values()][0].address).toBe('Test address 1');
+            expect([...changes.remove.values()][0].location.latitude).toBe(1);
+            expect([...changes.remove.values()][0].location.longitude).toBe(1);
 
-            expect([...lines.keys()][2].name).toBe('Test name 2');
-            expect([...lines.keys()][2].address).toBe('Test address 2');
-            expect([...lines.keys()][2].location.latitude).toBe(2);
-            expect([...lines.keys()][2].location.longitude).toBe(2);
+            expect([...changes.remove.keys()][1].name).toBe('Test name 1');
+            expect([...changes.remove.keys()][1].address).toBe('Test address 1');
+            expect([...changes.remove.keys()][1].location.latitude).toBe(1);
+            expect([...changes.remove.keys()][1].location.longitude).toBe(1);
 
-            expect([...lines.values()][2].name).toBe('Test name 3');
-            expect([...lines.values()][2].address).toBe('Test address 3');
-            expect([...lines.values()][2].location.latitude).toBe(3);
-            expect([...lines.values()][2].location.longitude).toBe(3);
+            expect([...changes.remove.values()][1].name).toBe('Test name 2');
+            expect([...changes.remove.values()][1].address).toBe('Test address 2');
+            expect([...changes.remove.values()][1].location.latitude).toBe(2);
+            expect([...changes.remove.values()][1].location.longitude).toBe(2);
+
+            expect([...changes.remove.keys()][2].name).toBe('Test name 2');
+            expect([...changes.remove.keys()][2].address).toBe('Test address 2');
+            expect([...changes.remove.keys()][2].location.latitude).toBe(2);
+            expect([...changes.remove.keys()][2].location.longitude).toBe(2);
+
+            expect([...changes.remove.values()][2].name).toBe('Test name 3');
+            expect([...changes.remove.values()][2].address).toBe('Test address 3');
+            expect([...changes.remove.values()][2].location.latitude).toBe(3);
+            expect([...changes.remove.values()][2].location.longitude).toBe(3);
+
             done();
         }));
         placesService.removePoints([commonPoints[0], commonPoints[2]]);
     });
 
     it('Поменять местами', (done) => {
-        subscriptions.push(routeService.removeLines$.subscribe((lines) => {
-            expect(lines.size).toBe(3);
-            expect([...lines.keys()][0].name).toBe('Test name 0');
-            expect([...lines.keys()][0].address).toBe('Test address 0');
-            expect([...lines.keys()][0].location.latitude).toBe(0);
-            expect([...lines.keys()][0].location.longitude).toBe(0);
+        subscriptions.push(routeService.changeLines$.subscribe((changes) => {
+            expect(changes.remove.size).toBe(3);
+            expect([...changes.remove.keys()][0].name).toBe('Test name 0');
+            expect([...changes.remove.keys()][0].address).toBe('Test address 0');
+            expect([...changes.remove.keys()][0].location.latitude).toBe(0);
+            expect([...changes.remove.keys()][0].location.longitude).toBe(0);
 
-            expect([...lines.values()][0].name).toBe('Test name 1');
-            expect([...lines.values()][0].address).toBe('Test address 1');
-            expect([...lines.values()][0].location.latitude).toBe(1);
-            expect([...lines.values()][0].location.longitude).toBe(1);
+            expect([...changes.remove.values()][0].name).toBe('Test name 1');
+            expect([...changes.remove.values()][0].address).toBe('Test address 1');
+            expect([...changes.remove.values()][0].location.latitude).toBe(1);
+            expect([...changes.remove.values()][0].location.longitude).toBe(1);
 
-            expect([...lines.keys()][1].name).toBe('Test name 1');
-            expect([...lines.keys()][1].address).toBe('Test address 1');
-            expect([...lines.keys()][1].location.latitude).toBe(1);
-            expect([...lines.keys()][1].location.longitude).toBe(1);
+            expect([...changes.remove.keys()][1].name).toBe('Test name 1');
+            expect([...changes.remove.keys()][1].address).toBe('Test address 1');
+            expect([...changes.remove.keys()][1].location.latitude).toBe(1);
+            expect([...changes.remove.keys()][1].location.longitude).toBe(1);
 
-            expect([...lines.values()][1].name).toBe('Test name 2');
-            expect([...lines.values()][1].address).toBe('Test address 2');
-            expect([...lines.values()][1].location.latitude).toBe(2);
-            expect([...lines.values()][1].location.longitude).toBe(2);
+            expect([...changes.remove.values()][1].name).toBe('Test name 2');
+            expect([...changes.remove.values()][1].address).toBe('Test address 2');
+            expect([...changes.remove.values()][1].location.latitude).toBe(2);
+            expect([...changes.remove.values()][1].location.longitude).toBe(2);
 
-            expect([...lines.keys()][2].name).toBe('Test name 2');
-            expect([...lines.keys()][2].address).toBe('Test address 2');
-            expect([...lines.keys()][2].location.latitude).toBe(2);
-            expect([...lines.keys()][2].location.longitude).toBe(2);
+            expect([...changes.remove.keys()][2].name).toBe('Test name 2');
+            expect([...changes.remove.keys()][2].address).toBe('Test address 2');
+            expect([...changes.remove.keys()][2].location.latitude).toBe(2);
+            expect([...changes.remove.keys()][2].location.longitude).toBe(2);
 
-            expect([...lines.values()][2].name).toBe('Test name 3');
-            expect([...lines.values()][2].address).toBe('Test address 3');
-            expect([...lines.values()][2].location.latitude).toBe(3);
-            expect([...lines.values()][2].location.longitude).toBe(3);
-            done();
-        }));
+            expect([...changes.remove.values()][2].name).toBe('Test name 3');
+            expect([...changes.remove.values()][2].address).toBe('Test address 3');
+            expect([...changes.remove.values()][2].location.latitude).toBe(3);
+            expect([...changes.remove.values()][2].location.longitude).toBe(3);
 
-        subscriptions.push(routeService.createLines$.subscribe((lines) => {
-            expect(lines.size).toBe(3);
-            expect([...lines.keys()][0].name).toBe('Test name 2');
-            expect([...lines.keys()][0].address).toBe('Test address 2');
-            expect([...lines.keys()][0].location.latitude).toBe(2);
-            expect([...lines.keys()][0].location.longitude).toBe(2);
 
-            expect([...lines.values()][0].name).toBe('Test name 1');
-            expect([...lines.values()][0].address).toBe('Test address 1');
-            expect([...lines.values()][0].location.latitude).toBe(1);
-            expect([...lines.values()][0].location.longitude).toBe(1);
+            expect(changes.create.size).toBe(3);
+            expect([...changes.create.keys()][0].name).toBe('Test name 2');
+            expect([...changes.create.keys()][0].address).toBe('Test address 2');
+            expect([...changes.create.keys()][0].location.latitude).toBe(2);
+            expect([...changes.create.keys()][0].location.longitude).toBe(2);
 
-            expect([...lines.keys()][1].name).toBe('Test name 1');
-            expect([...lines.keys()][1].address).toBe('Test address 1');
-            expect([...lines.keys()][1].location.latitude).toBe(1);
-            expect([...lines.keys()][1].location.longitude).toBe(1);
+            expect([...changes.create.values()][0].name).toBe('Test name 1');
+            expect([...changes.create.values()][0].address).toBe('Test address 1');
+            expect([...changes.create.values()][0].location.latitude).toBe(1);
+            expect([...changes.create.values()][0].location.longitude).toBe(1);
 
-            expect([...lines.values()][1].name).toBe('Test name 0');
-            expect([...lines.values()][1].address).toBe('Test address 0');
-            expect([...lines.values()][1].location.latitude).toBe(0);
-            expect([...lines.values()][1].location.longitude).toBe(0);
+            expect([...changes.create.keys()][1].name).toBe('Test name 1');
+            expect([...changes.create.keys()][1].address).toBe('Test address 1');
+            expect([...changes.create.keys()][1].location.latitude).toBe(1);
+            expect([...changes.create.keys()][1].location.longitude).toBe(1);
 
-            expect([...lines.keys()][2].name).toBe('Test name 0');
-            expect([...lines.keys()][2].address).toBe('Test address 0');
-            expect([...lines.keys()][2].location.latitude).toBe(0);
-            expect([...lines.keys()][2].location.longitude).toBe(0);
+            expect([...changes.create.values()][1].name).toBe('Test name 0');
+            expect([...changes.create.values()][1].address).toBe('Test address 0');
+            expect([...changes.create.values()][1].location.latitude).toBe(0);
+            expect([...changes.create.values()][1].location.longitude).toBe(0);
 
-            expect([...lines.values()][2].name).toBe('Test name 3');
-            expect([...lines.values()][2].address).toBe('Test address 3');
-            expect([...lines.values()][2].location.latitude).toBe(3);
-            expect([...lines.values()][2].location.longitude).toBe(3);
+            expect([...changes.create.keys()][2].name).toBe('Test name 0');
+            expect([...changes.create.keys()][2].address).toBe('Test address 0');
+            expect([...changes.create.keys()][2].location.latitude).toBe(0);
+            expect([...changes.create.keys()][2].location.longitude).toBe(0);
+
+            expect([...changes.create.values()][2].name).toBe('Test name 3');
+            expect([...changes.create.values()][2].address).toBe('Test address 3');
+            expect([...changes.create.values()][2].location.latitude).toBe(3);
+            expect([...changes.create.values()][2].location.longitude).toBe(3);
+
             done();
         }));
         placesService.swap(commonPoints[0].id, commonPoints[2].id);

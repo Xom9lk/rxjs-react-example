@@ -10,7 +10,7 @@ import {SearchBox} from '../SearchBox/SearchBox';
 import * as s from './Map.css';
 import {ioc} from '../../ioc';
 import {MapService} from '../../services/abstract/MapService';
-import {RouteService} from '../../services/RouteService';
+import {IChangeLinesEvent, RouteService} from '../../services/RouteService';
 import {PlacesService} from '../../services/PlacesService';
 
 interface IProps {}
@@ -45,10 +45,7 @@ export class Map extends React.PureComponent<IProps, IState> {
         this.subscriptions.push(this.routeService.createMarkers$.subscribe(this.mapService.addMarkers));
         this.subscriptions.push(this.routeService.removeMarkers$.subscribe(this.mapService.removeMarkers));
 
-        // todo: Нужно объеденить, т.к. сначала надо удалить, потом добавить линии, пока так,
-        // будет работать, т.к. на удаление подписка раньше
-        this.subscriptions.push(this.routeService.removeLines$.subscribe(this.mapService.removeLines));
-        this.subscriptions.push(this.routeService.createLines$.subscribe(this.mapService.addLines));
+        this.subscriptions.push(this.routeService.changeLines$.subscribe(this.changeLines));
         this.subscriptions.push(this.googleSearchPlaceService.searchResult$.subscribe(this.searchHandler));
         this.subscriptions.push(this.googleSearchPlaceService.searchResult$.subscribe(this.recenter));
         this.subscriptions.push(this.mapService.changePointPosition$
@@ -76,6 +73,11 @@ export class Map extends React.PureComponent<IProps, IState> {
             </div>
         );
     }
+
+    private changeLines = (changes: IChangeLinesEvent):void => {
+        this.mapService.removeLines(changes.remove);
+        this.mapService.addLines(changes.create);
+    };
 
     private searchHandler: TGooglePlacesSearchEventHandler = (place) => this.placesService.addPoints([place]);
     private recenter = (place: IDirectionPointScheme) => this.mapService.panTo(locationToLatLng(place.location));

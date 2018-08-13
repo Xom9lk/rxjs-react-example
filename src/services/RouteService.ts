@@ -10,15 +10,30 @@ import {DirectionPoint} from '../entities/DirectionPoint';
 import {inject, injectable} from 'inversify';
 import {PlacesService} from './PlacesService';
 
+export interface IChangeLinesEvent {
+    create: Map<DirectionPoint, DirectionPoint>;
+    remove: Map<DirectionPoint, DirectionPoint>;
+}
 
 @injectable()
 export class RouteService {
+    /**
+     * Поток точек для добавления
+     */
     public createMarkers$: Observable<DirectionPoint[]>;
+
+    /**
+     * Поток точек для удаления
+     */
     public removeMarkers$: Observable<DirectionPoint[]>;
-    public createLines$: Observable<Map<DirectionPoint, DirectionPoint>>;
-    public removeLines$: Observable<Map<DirectionPoint, DirectionPoint>>;
+
+    /**
+     * Поток ребер графа для удаления и добавления
+     */
+    public changeLines$: Observable<IChangeLinesEvent>;
 
     constructor(@inject(PlacesService) protected placesService: PlacesService) {
+        // Формируется необходимый набор данных для изменения графа
         const points$ = this.placesService.points$
             .distinctUntilChanged()
             .pairwise()
@@ -54,31 +69,30 @@ export class RouteService {
             .filter(points => points.length > 0)
             .share()
             .do(points => console.info(`[${RouteService.name}] Удалились точки`, points));
-        this.createLines$ = points$
+        this.changeLines$ = points$
             .map(
-                ({currentLinesMap, nextLinesMap}) => [...nextLinesMap.keys()]
-                    .reduce<Map<DirectionPoint, DirectionPoint>>((ac, p) => {
-                        if (!currentLinesMap.has(p) || currentLinesMap.get(p) !== nextLinesMap.get(p)) {
-                            ac.set(p, nextLinesMap.get(p)!);
-                        }
-                        return ac;
-                    }, new Map())
+                ({currentLinesMap, nextLinesMap}) => {
+                    const create = [...nextLinesMap.keys()]
+                        .reduce<Map<DirectionPoint, DirectionPoint>>((ac, p) => {
+                            if (!currentLinesMap.has(p) || currentLinesMap.get(p) !== nextLinesMap.get(p)) {
+                                ac.set(p, nextLinesMap.get(p)!);
+                            }
+                            return ac;
+                        }, new Map());
+
+                    const remove = [...currentLinesMap.keys()]
+                        .reduce<Map<DirectionPoint, DirectionPoint>>((ac, p) => {
+                            if (!nextLinesMap.has(p) || nextLinesMap.get(p) !== currentLinesMap.get(p)) {
+                                ac.set(p, currentLinesMap.get(p)!);
+                            }
+                            return ac;
+                        }, new Map());
+
+                    return {create, remove};
+                }
             )
-            .filter(lines => lines.size > 0)
+            .filter(change => change.create.size > 0 || change.remove.size > 0)
             .share()
-            .do(lines => console.info(`[${RouteService.name}] Добавились линии`, lines));
-        this.removeLines$ = points$
-            .map(
-                ({currentLinesMap, nextLinesMap}) => [...currentLinesMap.keys()]
-                    .reduce<Map<DirectionPoint, DirectionPoint>>((ac, p) => {
-                        if (!nextLinesMap.has(p) || nextLinesMap.get(p) !== currentLinesMap.get(p)) {
-                            ac.set(p, currentLinesMap.get(p)!);
-                        }
-                        return ac;
-                    }, new Map())
-            )
-            .filter(lines => lines.size > 0)
-            .share()
-            .do(lines => console.info(`[${RouteService.name}] Удалились линии`, lines));
+            .do(lines => console.info(`[${RouteService.name}] Обновление линий`, lines));
     }
 }
